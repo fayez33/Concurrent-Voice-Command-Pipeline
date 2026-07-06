@@ -43,11 +43,11 @@ The system was flooded with extreme traffic while an artificial 900ms latency wa
 
 * Latency (milliseconds):
 
- * p50 (Median): 669 ms
+  * p50 (Median): 669 ms
 
- * p95: 968 ms
+  * p95: 968 ms
 
- * p99: 1010 ms
+  * p99: 1010 ms
 
 * Estimated Throughput: 18.10 req/sec
 
