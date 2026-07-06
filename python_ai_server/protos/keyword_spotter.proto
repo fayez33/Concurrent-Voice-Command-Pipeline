@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+// This namespace prevents naming conflicts
+package keywordspotting;
+
+// --- Java Specific Options ---
+// These tell the compiler exactly how to generate the Java code later
+option java_multiple_files = true;
+option java_package = "com.miniproject.year4.grpc";
+option java_outer_classname = "KeywordSpottingProto";
+
+// --- The Service Definition ---
+// This is the actual network interface the ThreadPoolExecutor will call
+service AudioProcessor {
+    // A simple Unary RPC: Sends one audio chunk, gets one prediction back
+    rpc PredictCommand (AudioRequest) returns (PredictionResponse) {}
+}
+
+// --- The Data Payloads ---
+// The input boundary: What the Java server sends to Python
+message AudioRequest {
+    bytes audio_data = 1;     // The raw 16kHz float32 audio bytes
+    int64 timestamp = 2;      // UNIX timestamp to track latency
+    string client_id = 3;     // e.g., "living_room_mic_1"
+}
+
+// The output boundary: What Python sends back to Java
+message PredictionResponse {
+    string command = 1;       // "on", "off", "yes", "no", or "unknown"
+    float confidence = 2;     // The threshold percentage (e.g., 0.92)
+    bool success = 3;         // True if the CNN ran successfully, False if it crashed
+}

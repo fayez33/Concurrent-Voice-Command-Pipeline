@@ -1,0 +1,27 @@
+# Java / Gradle build files
+.gradle/
+build/
+bin/
+out/
+*.class
+
+# IDE files (IntelliJ, VS Code, Eclipse)
+.idea/
+*.iml
+*.iws
+.vscode/
+
+# Python caching and virtual environments
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+Mini_Project_Year_4/
+.ipynb_checkpoints/
+.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
