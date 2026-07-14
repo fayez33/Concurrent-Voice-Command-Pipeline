@@ -10,6 +10,12 @@ This project is a concurrent, fault-tolerant machine learning pipeline that proc
 
 Rather than relying on basic threading and pre-built APIs, this architecture demonstrates low-level computer engineering principles, including custom acoustic machine learning, active backpressure, and dynamic TCP-style congestion control to protect the downstream ML model from crashing under heavy load.
 
+## Live Demonstration
+
+Due to GitHub file size limits, the full video demonstration of the system in action (including the artificial network bottleneck and AIMD failure recovery) is hosted externally.
+
+[Click here to watch the Live Demo]https://youtu.be/WreO4A3jPPw
+
 ## Core Features
 
 - **Custom Convolutional Neural Network (CNN):** A CNN trained from scratch on 19,000 audio files. The pipeline mathematically slices raw audio into 1-second chunks and extracts 40x32 MFCC matrices using Librosa.
