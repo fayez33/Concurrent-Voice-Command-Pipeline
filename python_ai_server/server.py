@@ -3,6 +3,8 @@ from concurrent import futures
 import numpy as np
 import librosa
 import tensorflow as tf
+import time
+import random
 
 # Import the generated gRPC files
 import keyword_spotter_pb2
@@ -15,8 +17,6 @@ CLASSES = ['on', 'off', 'yes', 'no', 'unknown']
 print("Model loaded successfully. Ready for inference.")
 
 # 2. Define the Network Service
-
-
 class AudioProcessorServicer(keyword_spotter_pb2_grpc.AudioProcessorServicer):
 
     def PredictCommand(self, request, context):
@@ -25,6 +25,19 @@ class AudioProcessorServicer(keyword_spotter_pb2_grpc.AudioProcessorServicer):
             # We use np.frombuffer to instantly convert the raw network bytes back into a float array
             audio_data = np.frombuffer(request.audio_data, dtype=np.float32)
 
+            # ---------------------------------------------------------
+            # Artificial Delay: Intermittent Network Bottleneck (AIMD Demo)
+            # ---------------------------------------------------------
+            # Only inject the bottleneck 35% of the time so the pool can recover.
+            # This pushes the processing time over the 850ms threshold, 
+            # forcing the Java watcher to slash the pool size down.
+            # Uncomment the following if you want to test the AIMD feature:
+
+            #if random.random() < 0.35:
+            #    time.sleep(random.uniform(0.8, 1.1))
+            
+            # ---------------------------------------------------------
+            
             # Step B: Digital Signal Processing (MFCC)
             sample_rate = 16000
             mfcc = librosa.feature.mfcc(
@@ -72,8 +85,6 @@ class AudioProcessorServicer(keyword_spotter_pb2_grpc.AudioProcessorServicer):
             )
 
 # 3. Start the Server
-
-
 def serve():
     # Use a basic ThreadPool for Python's network connections
     # (The heavy queuing and dropping will be handled by Java)

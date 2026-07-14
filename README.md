@@ -21,32 +21,35 @@ Rather than relying on basic threading and pre-built APIs, this architecture dem
 ---
 
 ## System Performance & Benchmark Results
+
 To prove the effectiveness of our concurrent architecture, the pipeline was subjected to rigorous stress testing and failure injection.
 
 ### CPU-Bound Processing Benchmark
+
 We evaluated the mathematical pre-processing of 5,000 audio chunks to compare standard sequential execution against multi-core Java Parallel Streams.
 
-* Sequential Processing Time: 799 ms
+- Sequential Processing Time: 799 ms
 
-* Parallel Processing Time: 132 ms
+- Parallel Processing Time: 132 ms
 
-* Speedup Factor: 6.05x
+- Speedup Factor: 6.05x
 
 ### Resilience & Failure Injection (Stress Test)
+
 The system was flooded with extreme traffic while an artificial 900ms latency was injected into the Python server to simulate a severe network bottleneck.
 
-* Completed Requests: 1,301 (Successfully processed under the 1000ms gRPC deadline)
+- Completed Requests: 1,301 (Successfully processed under the 1000ms gRPC deadline)
 
-* Safely Rejected: 153 (Active backpressure intervened; the bounded queue hit its 100-request limit and dropped traffic to prevent a JVM OutOfMemory crash)
+- Safely Rejected: 153 (Active backpressure intervened; the bounded queue hit its 100-request limit and dropped traffic to prevent a JVM OutOfMemory crash)
 
-* Failed/Timeouts: 46 (Requests that crossed the hard 1000ms gRPC timeout limit)
+- Failed/Timeouts: 46 (Requests that crossed the hard 1000ms gRPC timeout limit)
 
-* Latency (milliseconds):
-  * p50 (Median): 669 ms
-  * p95: 968 ms
-  * p99: 1010 ms
+- Latency (milliseconds):
+  - p50 (Median): 669 ms
+  - p95: 968 ms
+  - p99: 1010 ms
 
-* Estimated Throughput: 18.10 req/sec
+- Estimated Throughput: 18.10 req/sec
 
 Architecture Tradeoff: The 153 rejected requests represent intentional data loss. We explicitly designed the system to drop valid voice commands during extreme network overloads rather than lock up the Python ML engine or crash the Java client.
 
@@ -117,3 +120,5 @@ Open a new terminal, navigate to the java_backend folder, and run the Main.java 
 - Mode 3 (Benchmark): A CPU-bound math test proving the speedup factor of parallel streaming vs. sequential execution.
 
 - Mode 4 (AIMD Congestion Test): Trickles requests to the server while a small code script artificially bottlenecks the Python server. This mode generates data proving the Java watcher successfully slashed and recovered the thread pool size to prevent a crash.
+
+> **⚠️ DEMO INSTRUCTIONS FOR MODE 4:** To successfully demonstrate the AIMD failure recovery path, you must artificially bottleneck the network. Open `server.py`, navigate to the `PredictCommand` function (Step A), and uncomment the **Artificial Delay** code block. This injects intermittent latency spikes, forcing the Java watcher to violently slash the pool size and safely scale it back up. Remember to re-comment this block when running Mode 1 (Live Demo) to prevent real-time lag!
